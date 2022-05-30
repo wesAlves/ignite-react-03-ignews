@@ -19,11 +19,17 @@
     "stripe": "^8.220.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^8.13.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
     "@types/next-auth": "^3.15.0",
     "@types/node": "^17.0.31",
     "@types/react": "^18.0.8",
+    "babel-jest": "^28.1.0",
     "eslint": "8.14.0",
     "eslint-config-next": "12.1.6",
+    "jest": "^28.1.0",
+    "jest-dom": "^4.0.0",
     "typescript": "^4.6.4"
   }
 }
