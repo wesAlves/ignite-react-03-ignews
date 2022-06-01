@@ -1,0 +1,34 @@
+import { render, screen } from "@testing-library/react";
+import { mocked } from "ts-jest/utils";
+import { useSession } from "next-auth/react";
+import SignInButton from ".";
+
+jest.mock("next-auth/react");
+
+describe("SignInButton component", () => {
+  it("renders correcty when user is not authenticated", () => {
+    const useSessionMocked = mocked(useSession);
+
+    useSessionMocked.mockReturnValue({ data: null, status: "unauthenticated" });
+
+    render(<SignInButton />);
+
+    expect(screen.getByText("Sign in with GitHub")).toBeInTheDocument();
+  });
+
+  it("renders correcty when user is authenticated", () => {
+    const useSessionMocked = mocked(useSession);
+
+    useSessionMocked.mockReturnValue({
+      data: {
+        user: { name: "Jhon Doe", email: "jhon.doe@example.com" },
+        expires: "fake-expires",
+      },
+      status: "authenticated",
+    });
+
+    render(<SignInButton />);
+
+    expect(screen.getByText("Jhon Doe")).toBeInTheDocument();
+  });
+});
