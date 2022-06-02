@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import { mocked } from "ts-jest/utils";
-import { useSession } from "next-auth/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { mocked } from "jest-mock";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 import { SubscribeButton } from ".";
 
 jest.mock("next-auth/react", () => {
@@ -8,29 +9,42 @@ jest.mock("next-auth/react", () => {
     useSession() {
       return [[null, false]];
     },
+    signIn: jest.fn(),
   };
 });
+
+jest.mock("next/router");
 
 describe("SubscribeButton component", () => {
   it("renders correctly", () => {
     render(<SubscribeButton />);
 
-    expect(screen.getByText("Subscribe now")).toBeInTheDocument();
+    expect(screen.getByText("Subscribe now!")).toBeInTheDocument();
   });
 
-  //   it("renders correctly when user is authenticated", () => {
-  //     const useSessionMocked = mocked(useSession);
+  it("redirects user to sing in when not authenticated", () => {
+    const signInMocked = mocked(signIn);
 
-  //     useSessionMocked.mockReturnValue({
-  //       data: {
-  //         user: { name: "Jhon Doe", email: "jhon.doe@example.com" },
-  //         expires: "fake-expires",
-  //       },
-  //       status: "authenticated",
-  //     });
+    render(<SubscribeButton />);
 
-  //     render(<SubscribeButton />);
+    const subscribeButton = screen.getByText("Subscribe now!");
 
-  //     expect(screen.getByText("Jhon Doe")).toBeInTheDocument();
-  //   });
+    fireEvent.click(subscribeButton);
+
+    expect(signInMocked).toHaveBeenCalled();
+  });
+
+  it("redirects to posts when user already ha a subscription", () => {
+    const useRouterMocked = mocked(useRouter);
+
+    const pushMock = jest.fn();
+
+    useRouterMocked.mockReturnValue({
+      push: pushMock,
+    } as any);
+
+    render(<SubscribeButton />);
+
+    fireEvent.click(pushMock);
+  });
 });
